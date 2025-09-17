@@ -8,13 +8,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Scenario } from "@/types";
 import { useScenarioStore } from "@/stores/useScenarioStore";
+import rules from "@/data/rules.json";
 
 interface ScenarioPreviewProps {
   scenario: Scenario;
   onReset: () => void;
 }
 
-const valueTagRegex = /#([^\s#.,!?;:]+)/g;
+// Create a dynamic regex from the rules to accurately capture tags with spaces
+const valueTagLabels = rules.values.map(v => v.label);
+const valueTagRegex = new RegExp(`#(${valueTagLabels.join('|')})`, 'g');
 
 // Component to parse and render the script
 function ScriptRenderer({ script }: { script: string }) {
