@@ -16,9 +16,18 @@ export type ValueKey = typeof CORE_VALUES[number];
 
 // 가치별 점수
 export type ValueScore = {
-  key: ValueKey;
-  score: 0 | 1 | 2 | 3 | 4 | 5;
-  evidence?: string[];
+  key: string;
+  score: number;
+  reason: string;
+};
+
+export type CoachingItem = {
+  title: string;
+  summary: string;
+  description: string;
+  dailyMission: string;
+  weeklyGoal: string;
+  value?: string;
 };
 
 // 리더 성향 진단 결과
@@ -26,8 +35,7 @@ export type Assessment = {
   id: string;
   input: Record<string, unknown>;
   scores: ValueScore[];
-  coaching: any[];
-  missions: any[];
+  coaching: CoachingItem[];
   createdAt: string;
 };
 
