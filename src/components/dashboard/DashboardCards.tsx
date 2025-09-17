@@ -46,28 +46,36 @@ export function TopCoaching() {
   );
 }
 
-export function DailyMission() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>오늘의 10분 미션</CardTitle>
-        <CardDescription>매일 작은 실천으로 리더십을 키워보세요.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {mockAssessment.missions.map((mission, index) => (
-          <div key={index} className="flex items-center space-x-2">
-            <Checkbox id={`mission-${index}`} />
-            <label
-              htmlFor={`mission-${index}`}
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {mission}
-            </label>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
+function MissionCard() {
+ const mockAssessment = mockAssessment;
+
+ return (
+   <Card>
+     <CardHeader>
+       <CardTitle>오늘의 미션</CardTitle>
+     </CardHeader>
+     <CardContent className="space-y-2">
+       <div className="flex items-center space-x-2">
+         <Checkbox id="mission-0" defaultChecked />
+         <label
+           htmlFor="mission-0"
+           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+         >
+           {mockAssessment.coaching[0].dailyMission}
+         </label>
+       </div>
+       <div className="flex items-center space-x-2">
+         <Checkbox id="mission-1" />
+         <label
+           htmlFor="mission-1"
+           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+         >
+           {mockAssessment.coaching[1].dailyMission}
+         </label>
+       </div>
+     </CardContent>
+   </Card>
+ );
 }
 
 export function RecentScenarios() {
