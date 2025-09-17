@@ -1,27 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { mockAssessment, mockScenarios } from "@/data/mock-data";
-import { ValueKey } from "@/types";
 import { MOCK_DATA } from "@/data/mock-data";
+import { CoachingItem, Scenario } from "@/types";
 
-interface CoachingCardProps {
-  coaching: {
-    title: string;
-    summary: string;
-    value: ValueKey;
-  }
-}
-
-function CoachingCard({
-  coaching,
-}: {
-  coaching: {
-    title: string;
-    summary: string;
-    value?: ValueKey;
-  };
-}) {
+function CoachingCard({ coaching }: { coaching: CoachingItem }) {
   return (
     <Card>
       <CardHeader>
@@ -67,7 +57,7 @@ function MissionCard() {
   );
 }
 
-export function RecentScenarios() {
+function RecentScenarios() {
   return (
     <Card>
       <CardHeader>
@@ -75,9 +65,9 @@ export function RecentScenarios() {
       </CardHeader>
       <CardContent>
         <ul className="space-y-2">
-          {mockScenarios.map((scenario) => (
-            <li key={scenario.id} className="text-sm text-muted-foreground">
-              {scenario.params.topic} ({new Date(scenario.createdAt).toLocaleDateString()})
+          {MOCK_DATA.scenarios.slice(0, 3).map((scenario: Scenario) => (
+            <li key={scenario.id} className="text-sm text-muted-foreground truncate">
+              {scenario.input.situation}
             </li>
           ))}
         </ul>
@@ -89,13 +79,13 @@ export function RecentScenarios() {
   );
 }
 
-export function DashboardCards() {
+export default function DashboardCards() {
   const top3Coaching = MOCK_DATA.assessments[0].coaching.slice(0, 3);
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       <div className="col-span-1 space-y-4 md:col-span-2">
         <h2 className="text-xl font-bold">Top 3 코칭 제안</h2>
-        {top3Coaching.map((coach, index) => (
+        {top3Coaching.map((coach: CoachingItem, index: number) => (
           <CoachingCard key={index} coaching={coach} />
         ))}
       </div>

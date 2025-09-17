@@ -1,17 +1,21 @@
-import type { Assessment, ValueScore } from "@/types";
+import type { Assessment, Scenario, ValueScore } from "@/types";
 import { CORE_VALUES } from "@/types";
 
 const createMockScores = (): ValueScore[] => {
-  return CORE_VALUES.map(key => ({
+  const keys: ValueKey[] = [
+    "SafetyQuality", "Perseverance", "Experimentation", "Agility",
+    "Collaboration", "Resilience", "DEI", "Expertise", "Ethics", "DataThinking"
+  ];
+  return keys.map(key => ({
     key,
-    score: Math.floor(Math.random() * 5) + 1 as ValueScore['score'],
-    evidence: ["Mock evidence for " + key]
+    score: Math.floor(Math.random() * 4) + 1, // 1~4점
+    reason: `[${key}] 가치에 대한 구체적인 행동 근거 문장입니다.`
   }));
 };
 
-export const mockAssessment: Assessment = {
+const mockAssessment: Assessment = {
   id: "asmt_12345",
-  input: "Mock user input text.",
+  input: { text: "제가 최근에 팀원들과 함께 신규 프로젝트를 진행하면서..." },
   scores: createMockScores(),
   coaching: [
     {
@@ -30,35 +34,39 @@ export const mockAssessment: Assessment = {
     },
     {
       title: "데이터 기반 소통",
-      summary: "주관적인 의견보다 데이터를 근거로 팀원들을 설득하고 소통합니다.",
-      mission: "오늘 업무 보고 시, 데이터나 수치를 한 가지 이상 포함하여 이야기하기",
-      goal: "주간 보고서의 모든 주장을 데이터로 뒷받침하기",
+      summary: "주관적인 의견보다 데이터를 근거로 팀원들을 설득하고 소통하는 능력은 현대 리더에게 필수적입니다.",
+      dailyMission: "오늘 업무 보고 시, 데이터나 수치를 한 가지 이상 포함하여 이야기하기",
+      weeklyGoal: "주간 보고서의 모든 주장을 데이터로 뒷받침하기",
       value: "DataThinking"
     }
-  ],
-  missions: [
-    "오늘 동료 한 명에게 구체적인 칭찬 한 가지 하기",
-    "5분 안에 사소한 업무 관련 결정 3가지 내리기",
-    "오늘 업무 보고 시, 데이터나 수치를 한 가지 이상 포함하여 이야기하기"
   ],
   createdAt: new Date().toISOString(),
 };
 
-export const mockScenarios = [
+const mockScenarios: Scenario[] = [
   {
     id: "scn_abcde",
-    params: {
-      topic: "팀 내 업무 분배 및 피드백"
+    input: {
+      situation: "팀 내 업무 분배 및 피드백",
+      tone: 'balanced',
+      turns: 10,
     },
-    scriptMd: "...",
+    scriptMd: "**리더:** 안녕하세요. #협업\n**구성원 A:** 안녕하세요, 리더님. #소통",
     createdAt: new Date().toISOString(),
   },
   {
     id: "scn_fghij",
-    params: {
-      topic: "프로젝트 마일스톤 지연"
+    input: {
+      situation: "프로젝트 마일스톤 지연 문제 해결",
+      tone: 'assertive',
+      turns: 8,
     },
-    scriptMd: "...",
-    createdAt: new Date(Date.now() - 86400000).toISOString(), // 어제
+    scriptMd: "**리더:** 프로젝트가 지연되고 있습니다. 원인이 무엇인가요? #집요함",
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
   }
-]
+];
+
+export const MOCK_DATA = {
+  assessments: [mockAssessment],
+  scenarios: mockScenarios,
+};
