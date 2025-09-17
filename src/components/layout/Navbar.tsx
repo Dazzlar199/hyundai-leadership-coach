@@ -50,9 +50,6 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/admin">Admin</Link>
-            </Button>
             <ModeToggle />
           </div>
         </div>
