@@ -7,7 +7,15 @@ import { Badge } from "@/components/ui/badge";
 
 function HeroSection() {
   return (
-    <section className="text-center container mx-auto py-16 sm:py-24">
+    <section className="relative text-center container mx-auto py-16 sm:py-24">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 transform-gpu overflow-hidden blur-3xl"
+      >
+        <div
+          className="relative left-1/2 -translate-x-1/2 w-[36.125rem] h-[20rem] bg-gradient-radial from-blue-200/50 dark:from-white/10 to-transparent"
+        />
+      </div>
       <div className="mx-auto max-w-3xl">
         <Badge variant="outline" className="mb-6">
           AI Leadership Coaching
