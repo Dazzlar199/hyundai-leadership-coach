@@ -24,7 +24,7 @@ export type ValueScore = {
 // 리더 성향 진단 결과
 export type Assessment = {
   id: string;
-  input: any;
+  input: Record<string, unknown>;
   scores: ValueScore[];
   coaching: any[];
   missions: any[];
@@ -34,7 +34,7 @@ export type Assessment = {
 // 대화 시나리오
 export type Scenario = {
   id: string;
-  params: any;
+  input: ScenarioInput;
   scriptMd: string;
   createdAt: string;
 };
@@ -42,15 +42,17 @@ export type Scenario = {
 // 가치/룰셋/프롬프트
 export type RuleSet = {
   version: string;
-  values: {
-    key: ValueKey;
-    label: string;
-    policy: string;
-  }[];
-  prompts: {
-    assess: string;
-    coach: string;
-    scenario: string;
-    voice: string;
-  };
+  values: { key: string; label: string }[];
+  prompts: Record<string, unknown>;
+};
+
+export type ScenarioInput = {
+  situation: string;
+  tone: string;
+  turns: number;
+};
+
+export type ChatMessage = {
+  role: 'user' | 'assistant';
+  content: string;
 };

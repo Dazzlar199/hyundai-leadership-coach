@@ -8,13 +8,17 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import type { ValueScore } from "@/types"
 import rules from "@/data/rules.json";
 
-interface DashboardRadarChartProps {
-  scores: ValueScore[];
+interface CustomizedAxisTickProps {
+  x?: number;
+  y?: number;
+  payload?: {
+    value: string;
+  };
 }
 
-const CustomizedAxisTick = (props: any) => {
+const CustomizedAxisTick = (props: CustomizedAxisTickProps) => {
   const { x, y, payload } = props;
-  const words = payload.value.split(' ');
+  const words = payload?.value.split(' ') ?? [];
   
   return (
     <g transform={`translate(${x},${y})`}>
@@ -28,6 +32,10 @@ const CustomizedAxisTick = (props: any) => {
     </g>
   );
 };
+
+interface DashboardRadarChartProps {
+  scores: ValueScore[];
+}
 
 export function DashboardRadarChart({ scores }: DashboardRadarChartProps) {
   const chartData = scores.map(score => ({
