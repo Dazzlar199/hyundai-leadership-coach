@@ -12,11 +12,11 @@ export const CORE_VALUES = [
   "DataThinking",
 ] as const;
 
-export type ValueKey = typeof CORE_VALUES[number];
+export type ValueKey = (typeof CORE_VALUES)[number];
 
 // 가치별 점수
 export type ValueScore = {
-  key: string;
+  key: ValueKey;
   score: number;
   reason: string;
 };
@@ -27,7 +27,7 @@ export type CoachingItem = {
   description: string;
   dailyMission: string;
   weeklyGoal: string;
-  value?: string;
+  value?: ValueKey;
 };
 
 // 리더 성향 진단 결과

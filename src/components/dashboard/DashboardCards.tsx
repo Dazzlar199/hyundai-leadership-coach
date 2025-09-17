@@ -12,7 +12,15 @@ interface CoachingCardProps {
   }
 }
 
-function CoachingCard({ coaching }: CoachingCardProps) {
+function CoachingCard({
+  coaching,
+}: {
+  coaching: {
+    title: string;
+    summary: string;
+    value?: ValueKey;
+  };
+}) {
   return (
     <Card>
       <CardHeader>
