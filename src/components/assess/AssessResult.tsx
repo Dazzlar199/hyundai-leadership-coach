@@ -45,7 +45,7 @@ export function AssessResult() {
       assertive: '단호',
     };
     const imageName = tone ? toneMap[tone] : '균형'; // Default to '균형' if tone is somehow null
-    return `/images/${imageName}.png`;
+    return `/images/${imageName}.jpeg`;
   }, [tone]);
 
   return (
