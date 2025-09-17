@@ -30,8 +30,8 @@ const formSchema = z.object({
   situation: z
     .string()
     .min(10, { message: "최소 10자 이상 구체적으로 작성해주세요." }),
-  tone: z.string().default('balanced'),
-  turns: z.number().min(8).max(12).default(10),
+  tone: z.string(),
+  turns: z.number().min(8).max(12),
 });
 
 export function ScenarioForm() {
