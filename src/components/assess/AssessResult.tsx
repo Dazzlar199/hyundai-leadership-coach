@@ -40,11 +40,11 @@ export function AssessResult() {
   
   const leaderImageSrc = useMemo(() => {
     const toneMap: Record<string, string> = {
-      empathetic: '공감',
-      balanced: '균형',
-      assertive: '단호',
+      empathetic: 'empathy',
+      balanced: 'balance',
+      assertive: 'assertive',
     };
-    const imageName = tone ? toneMap[tone] : '균형'; // Default to '균형' if tone is somehow null
+    const imageName = tone ? toneMap[tone] : 'balance'; // Default to 'balance' if tone is somehow null
     return `/images/${imageName}.jpeg`;
   }, [tone]);
 
