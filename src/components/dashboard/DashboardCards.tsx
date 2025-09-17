@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Checkbox } from "@/components/ui/checkbox";
 import { mockAssessment, mockScenarios } from "@/data/mock-data";
 import { ValueKey } from "@/types";
+import { MOCK_DATA } from "@/data/mock-data";
 
 interface CoachingCardProps {
   coaching: {
@@ -34,48 +35,36 @@ function CoachingCard({
   );
 }
 
-export function TopCoaching() {
-  const top3Coaching = mockAssessment.coaching.slice(0, 3);
-  return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold">Top 3 코칭 제안</h2>
-      {top3Coaching.map((coach, index) => (
-        <CoachingCard key={index} coaching={coach} />
-      ))}
-    </div>
-  );
-}
-
 function MissionCard() {
- const mockAssessment = mockAssessment;
+  const mockAssessment = MOCK_DATA.assessments[0];
 
- return (
-   <Card>
-     <CardHeader>
-       <CardTitle>오늘의 미션</CardTitle>
-     </CardHeader>
-     <CardContent className="space-y-2">
-       <div className="flex items-center space-x-2">
-         <Checkbox id="mission-0" defaultChecked />
-         <label
-           htmlFor="mission-0"
-           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-         >
-           {mockAssessment.coaching[0].dailyMission}
-         </label>
-       </div>
-       <div className="flex items-center space-x-2">
-         <Checkbox id="mission-1" />
-         <label
-           htmlFor="mission-1"
-           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-         >
-           {mockAssessment.coaching[1].dailyMission}
-         </label>
-       </div>
-     </CardContent>
-   </Card>
- );
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>오늘의 미션</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        <div className="flex items-center space-x-2">
+          <Checkbox id="mission-0" defaultChecked />
+          <label
+            htmlFor="mission-0"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {mockAssessment.coaching[0].dailyMission}
+          </label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox id="mission-1" />
+          <label
+            htmlFor="mission-1"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {mockAssessment.coaching[1].dailyMission}
+          </label>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 export function RecentScenarios() {
@@ -97,5 +86,23 @@ export function RecentScenarios() {
         <Button variant="outline" size="sm">모두 보기</Button>
       </CardFooter>
     </Card>
+  );
+}
+
+export function DashboardCards() {
+  const top3Coaching = MOCK_DATA.assessments[0].coaching.slice(0, 3);
+  return (
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="col-span-1 space-y-4 md:col-span-2">
+        <h2 className="text-xl font-bold">Top 3 코칭 제안</h2>
+        {top3Coaching.map((coach, index) => (
+          <CoachingCard key={index} coaching={coach} />
+        ))}
+      </div>
+      <div className="col-span-1 space-y-4">
+        <MissionCard />
+        <RecentScenarios />
+      </div>
+    </div>
   );
 }
