@@ -1,5 +1,5 @@
 import { Navbar } from "@/components/layout/Navbar";
-import { TopCoaching } from "@/components/dashboard/DashboardCards";
+import DashboardCards from "@/components/dashboard/DashboardCards";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -59,7 +59,7 @@ export default function Home() {
              </p>
            </div>
            <div className="mt-16">
-             <TopCoaching />
+             <DashboardCards />
            </div>
         </div>
       </main>
