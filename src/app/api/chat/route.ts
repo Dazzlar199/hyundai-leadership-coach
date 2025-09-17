@@ -1,62 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { promises as fs } from 'fs';
-import path from 'path';
+import rules from '@/data/rules.json';
 
-let openai: OpenAI | null = null;
-if (process.env.OPENAI_API_KEY) {
-  openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-}
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-const jsonFilePath = path.join(process.cwd(), 'src', 'data', 'rules.json');
-
-export async function POST(request: NextRequest) {
-  if (!openai) {
-    return NextResponse.json({ message: 'OpenAI API key is not configured.' }, { status: 500 });
-  }
-
+export async function POST(req: NextRequest) {
   try {
-    const { messages, userContext } = await request.json();
+    const { messages, userContext } = await req.json();
+    const { initialText, tone } = userContext;
 
-    const rulesFile = await fs.readFile(jsonFilePath, 'utf8');
-    const rules = JSON.parse(rulesFile);
-    
+    // Type assertion for tones
+    const tones: Record<string, string> = rules.prompts.tones;
+    const toneInstruction = tone ? tones[tone] : tones['balanced'];
+
     // Construct the system prompt from the structured persona object
     const persona = rules.prompts.coach_persona;
     const systemPrompt = `
       You are ${persona.name}, ${persona.role}.
       Follow these instructions strictly:
       ${persona.instructions.map((inst: string) => `- ${inst}`).join('\n')}
+      
+      Your current conversational tone must be as follows:
+      - ${toneInstruction}
+
       Adhere to these constraints:
       ${persona.constraints.map((constraint: string) => `- ${constraint}`).join('\n')}
     `.trim();
 
     const initialMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
       { role: 'system', content: systemPrompt },
-      {
-        role: 'user',
-        content: `팀원인 제가 겪은 상황은 다음과 같습니다: "${userContext}" 이 상황에 대해 대화를 시작해주세요.`
-      }
+      { role: 'user', content: `Here is the situation I want to discuss:\n\n${initialText}` },
     ];
 
-    // If there's a history, filter out the initial user context message to avoid duplication
-    const history = messages.length > 1 ? messages.slice(1) : [];
+    const allMessages = messages.length > 0 ?
+      [{ role: 'system', content: systemPrompt }, ...messages] :
+      initialMessages;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
-      messages: [...initialMessages, ...history],
-      temperature: 0.7,
+      messages: allMessages,
+      temperature: 0.8,
       stream: false,
     });
 
-    const botMessage = response.choices[0].message.content;
+    const assistantMessage = response.choices[0].message;
 
-    return NextResponse.json({ message: botMessage });
+    return NextResponse.json({ message: assistantMessage });
 
   } catch (error) {
-    console.error('[API Chat Error]', error);
+    console.error('Chat API Error:', error);
     const message = error instanceof Error ? error.message : 'An unknown error occurred.';
     return NextResponse.json({ message }, { status: 500 });
   }

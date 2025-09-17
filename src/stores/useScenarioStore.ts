@@ -6,9 +6,9 @@ interface ScenarioState {
   isLoading: boolean;
   error: string | null;
   scenario: Scenario | null;
-  selectedScenarioText: string | null;
+  selectedScenario: { text: string; tone: string; } | null;
   generateScenario: (params: { situation: string; tone: string; turns: number }) => Promise<void>;
-  startAssessmentWithScenario: (scenarioText: string) => void;
+  startAssessmentWithScenario: (data: { text: string; tone: string; }) => void;
   reset: () => void;
 }
 
@@ -16,7 +16,7 @@ export const useScenarioStore = create<ScenarioState>((set) => ({
   isLoading: false,
   error: null,
   scenario: null,
-  selectedScenarioText: null,
+  selectedScenario: null,
   generateScenario: async (params) => {
     set({ isLoading: true, error: null, scenario: null });
     try {
@@ -38,8 +38,8 @@ export const useScenarioStore = create<ScenarioState>((set) => ({
       toast.error(errorMessage);
     }
   },
-  startAssessmentWithScenario: (scenarioText: string) => {
-    set({ selectedScenarioText: scenarioText });
+  startAssessmentWithScenario: (data) => {
+    set({ selectedScenario: data });
   },
-  reset: () => set({ scenario: null, isLoading: false, error: null }),
+  reset: () => set({ scenario: null, isLoading: false, error: null, selectedScenario: null }),
 }));

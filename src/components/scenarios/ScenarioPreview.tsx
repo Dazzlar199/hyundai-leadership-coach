@@ -114,13 +114,13 @@ export function ScenarioPreview({ scenario, onReset }: ScenarioPreviewProps) {
   );
 
   const handleStartAssessment = () => {
-    // Start assessment with the full script, including tags, to give AI full context
+    // Start assessment with the full script to give AI full context
     const cleanText = scenario.scriptMd
       .replace(/\*\*.*?\:\*\*/g, "") // Remove speaker markdown
-      .replace(/#([^\s#.,!?;:]+)/g, "") // Remove tags
+      .replace(valueTagRegex, "") // Remove tags using dynamic regex
       .replace(/\[상황 정리\]/g, "") // Remove summary marker
       .trim();
-    startAssessment(cleanText);
+    startAssessment({ text: cleanText, tone: scenario.input.tone });
     router.push("/assess");
   };
 

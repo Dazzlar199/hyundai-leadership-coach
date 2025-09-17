@@ -17,7 +17,8 @@ export function AssessResult() {
     isAssessing,
     sendMessage,
     runAssessment,
-    reset 
+    reset,
+    tone,
   } = useAssessStore();
   
   const [userInput, setUserInput] = useState('');
@@ -37,13 +38,15 @@ export function AssessResult() {
     }
   };
   
-  const leaderImageId = useMemo(() => {
-    // A simple hash function to pick a leader image.
-    // Using a fixed string for now as result.id is not available at the start.
-    const id = result?.id || 'static_id_for_leader_image';
-    const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return (hash % 3) + 1;
-  }, [result]);
+  const leaderImageSrc = useMemo(() => {
+    const toneMap: Record<string, string> = {
+      empathetic: '공감',
+      balanced: '균형',
+      assertive: '단호',
+    };
+    const imageName = tone ? toneMap[tone] : '균형'; // Default to '균형' if tone is somehow null
+    return `/images/${imageName}.png`;
+  }, [tone]);
 
   return (
     <div className="space-y-6">
@@ -51,8 +54,8 @@ export function AssessResult() {
         <CardHeader className="flex flex-row items-center gap-4">
           <div className="relative w-24 h-24">
             <Image
-              src={`/images/leader${leaderImageId}.png`}
-              alt={`팀장 ${leaderImageId}`}
+              src={leaderImageSrc}
+              alt={`${tone}적인 팀장`}
               width={96}
               height={96}
               className="rounded-full object-cover bg-muted"

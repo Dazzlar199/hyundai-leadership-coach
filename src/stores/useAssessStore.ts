@@ -1,21 +1,17 @@
 import { create } from 'zustand';
-import { Assessment } from '@/types';
 import { toast } from 'sonner';
-
-interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-}
+import { Assessment, ChatMessage } from '@/types';
 
 interface AssessState {
-  isStarting: boolean; // For initial text submission
-  isChatLoading: boolean; // For waiting on AI message
-  isAssessing: boolean; // For final assessment
+  isStarting: boolean;
+  isChatLoading: boolean;
+  isAssessing: boolean;
   error: string | null;
   result: Assessment | null;
   messages: ChatMessage[];
   initialText: string | null;
-  startConversation: (input: { text: string; sample?: string; tags?: string[] }) => Promise<void>;
+  tone: string | null;
+  startConversation: (input: { text: string; tone: string; }) => Promise<void>;
   sendMessage: (message: string) => Promise<void>;
   runAssessment: () => Promise<void>;
   reset: () => void;
@@ -29,106 +25,108 @@ export const useAssessStore = create<AssessState>((set, get) => ({
   result: null,
   messages: [],
   initialText: null,
-  
-  startConversation: async (input) => {
-    const textToUse = input.text || input.sample || '';
-    if (!textToUse) return;
+  tone: null,
+  startConversation: async ({ text, tone }) => {
+    set({
+      isStarting: true,
+      error: null,
+      initialText: text,
+      tone: tone, // Store the tone
+      messages: [],
+      result: null,
+    });
 
-    set({ isStarting: true, result: null, messages: [], initialText: textToUse });
-    
-    // This function now only starts the chat.
-    const { initialText } = get();
-    if (!initialText) {
-      set({ isStarting: false });
-      return;
-    }
-    
-    set({ isChatLoading: true });
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [], userContext: initialText }),
+        body: JSON.stringify({
+          messages: [],
+          userContext: { initialText: text, tone: tone }, // Pass tone to API
+        }),
       });
-      const data = await response.json();
-      set({
-        messages: [{ role: 'assistant', content: data.message }],
-        isChatLoading: false,
-      });
+
+      if (!response.ok) {
+        throw new Error('Failed to start conversation');
+      }
+
+      const { message } = await response.json();
+      set((state) => ({ messages: [...state.messages, message] }));
     } catch (error) {
-      set({ isChatLoading: false });
-      toast.error("대화 시작 중 오류가 발생했습니다.");
+      const errorMessage = '대화 시작 중 오류가 발생했습니다.';
+      set({ error: errorMessage });
+      toast.error(errorMessage);
     } finally {
       set({ isStarting: false });
     }
   },
-
-  sendMessage: async (message: string) => {
-    const { initialText, messages } = get();
-    if (!initialText) return;
-
-    const newMessages: ChatMessage[] = [...messages, { role: 'user', content: message }];
-    set({ messages: newMessages, isChatLoading: true });
+  sendMessage: async (message) => {
+    const userMessage: ChatMessage = { role: 'user', content: message };
+    const newMessages = [...get().messages, userMessage];
+    set({ messages: newMessages, isChatLoading: true, error: null });
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: newMessages, userContext: initialText }),
-      });
-      const data = await response.json();
-      set((state) => ({
-        messages: [...state.messages, { role: 'assistant', content: data.message }],
-        isChatLoading: false,
-      }));
-    } catch (error) {
-       set({ isChatLoading: false });
-       toast.error("메시지 전송 중 오류가 발생했습니다.");
-    }
-  },
-
-  runAssessment: async () => {
-    const { messages } = get();
-    if (messages.length === 0) {
-      toast.error("분석할 대화 내용이 없습니다.");
-      return;
-    }
-    set({ isAssessing: true });
-    try {
-      // Format messages into a single string for the assess API
-      const conversationText = messages.map(m => `${m.role === 'user' ? '나' : '팀장'}: ${m.content}`).join('\n');
-      
-      const response = await fetch('/api/assess', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: conversationText }),
+        body: JSON.stringify({
+          messages: newMessages,
+          userContext: { initialText: get().initialText, tone: get().tone }, // Pass tone with every message
+        }),
       });
 
       if (!response.ok) {
-        const errorBody = await response.json();
-        throw new Error(errorBody.message || 'Failed to get assessment from server.');
+        throw new Error('Failed to send message');
       }
-      
-      const resultData = await response.json();
-      const finalResult: Assessment = {
-        id: `asmt_${Date.now()}`,
-        input: { text: conversationText },
-        createdAt: new Date().toISOString(),
-        ...resultData,
-      };
 
-      set({ result: finalResult });
-
+      const { message: assistantMessage } = await response.json();
+      set((state) => ({ messages: [...state.messages, assistantMessage] }));
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      const errorMessage = '메시지 전송 중 오류가 발생했습니다.';
       set({ error: errorMessage });
-      toast.error("진단 중 오류가 발생했습니다.", {
-        description: errorMessage,
+      toast.error(errorMessage);
+    } finally {
+      set({ isChatLoading: false });
+    }
+  },
+  runAssessment: async () => {
+    set({ isAssessing: true, error: null });
+    const { messages, initialText } = get();
+
+    // Construct the full conversation text
+    const conversationText = messages
+      .map((msg) => `${msg.role === "user" ? "나" : "팀장"}: ${msg.content}`)
+      .join("\n");
+
+    try {
+      const response = await fetch("/api/assess", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: initialText, // The initial context
+          dialogue: conversationText, // The full conversation
+        }),
       });
+      if (!response.ok) throw new Error("Assessment failed");
+      const result = await response.json();
+      set({ result });
+    } catch (error) {
+      const errorMessage = "진단 결과 생성 중 오류가 발생했습니다.";
+      set({ error: errorMessage });
+      toast.error(errorMessage);
     } finally {
       set({ isAssessing: false });
     }
   },
-  
-  reset: () => set({ result: null, isStarting: false, isChatLoading: false, isAssessing: false, error: null, messages: [], initialText: null }),
+  reset: () =>
+    set({
+      isStarting: false,
+      isChatLoading: false,
+      isAssessing: false,
+      error: null,
+      result: null,
+      messages: [],
+      initialText: null,
+      tone: null,
+    }),
 }));

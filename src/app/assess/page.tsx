@@ -10,19 +10,19 @@ import { Navbar } from '@/components/layout/Navbar';
 export default function AssessPage() {
   const router = useRouter();
   const { initialText, startConversation } = useAssessStore();
-  const { selectedScenarioText, startAssessmentWithScenario } = useScenarioStore();
+  const { selectedScenario, startAssessmentWithScenario } = useScenarioStore();
 
   useEffect(() => {
-    // If there's a scenario text, start the conversation.
-    if (selectedScenarioText && !initialText) {
-      startConversation({ text: selectedScenarioText });
-      startAssessmentWithScenario(''); // Clear the scenario text to prevent re-triggering
-    } 
+    // If there's a scenario, start the conversation with its text and tone.
+    if (selectedScenario && !initialText) {
+      startConversation({ text: selectedScenario.text, tone: selectedScenario.tone });
+      startAssessmentWithScenario(null); // Clear the scenario to prevent re-triggering
+    }
     // If the user lands here directly without a scenario, redirect them to start the flow.
-    else if (!selectedScenarioText && !initialText) {
+    else if (!selectedScenario && !initialText) {
       router.replace('/scenarios');
     }
-  }, [selectedScenarioText, initialText, startConversation, startAssessmentWithScenario, router]);
+  }, [selectedScenario, initialText, startConversation, startAssessmentWithScenario, router]);
 
 
   // Only show the chat/result view if a conversation has been initiated.
