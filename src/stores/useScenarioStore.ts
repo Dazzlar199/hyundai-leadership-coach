@@ -8,7 +8,7 @@ interface ScenarioState {
   scenario: Scenario | null;
   selectedScenario: { text: string; tone: string; } | null;
   generateScenario: (params: { situation: string; tone: string; turns: number }) => Promise<void>;
-  startAssessmentWithScenario: (data: { text: string; tone: string; }) => void;
+  startAssessmentWithScenario: (data: { text: string; tone: string; } | null) => void;
   reset: () => void;
 }
 
