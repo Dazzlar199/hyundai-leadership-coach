@@ -9,6 +9,29 @@ import { DashboardRadarChart } from '../dashboard/DashboardRadarChart';
 import { CoachingCardList } from '../coach/CoachingCardList';
 import Image from 'next/image';
 
+function FinalMessage() {
+  return (
+    <Card className="relative w-full h-96 overflow-hidden mt-8">
+      <Image
+        src="/images/groupteam.jpg"
+        alt="Team"
+        fill
+        className="object-cover"
+      />
+      <div className="absolute inset-0 bg-black/60 flex items-end justify-center pb-8">
+        <div className="text-center text-white drop-shadow-lg p-4">
+          <h2 className="text-3xl font-bold">
+            안전팀의 모든 사원분들을 응원합니다.
+          </h2>
+          <p className="text-lg mt-2">
+            체험해 주셔서 감사합니다.
+          </p>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 export function AssessResult() {
   const { 
     result, 
@@ -131,6 +154,8 @@ export function AssessResult() {
               <CoachingCardList items={result.coaching || []} />
             </CardContent>
           </Card>
+
+          <FinalMessage />
 
           <div className="text-center">
             <Button onClick={reset}>다시 진단하기</Button>

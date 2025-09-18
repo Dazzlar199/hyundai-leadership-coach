@@ -185,7 +185,7 @@ export async function generateScenario({
 
   return {
     id: `scen_${Date.now()}`,
-    input: { situation: safeSituation, tone: tone, turns: safeTurns }, // Use original tone
+    input: { situation: safeSituation, tone: safeTone, turns: safeTurns },
     scriptMd,
     createdAt: new Date().toISOString(),
   };
