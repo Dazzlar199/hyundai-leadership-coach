@@ -22,7 +22,7 @@ function Logo() {
 export function Navbar() {
   const menuItems = [
     { name: "진단", path: "/assess" },
-    { name: "시나리오", path: "/scenarios" },
+    { name: "시나리오 v2", path: "/scenarios" },
     // { name: "Coach", path: "/coach" },
     // { name: "Voice", path: "/voice" },
   ];
