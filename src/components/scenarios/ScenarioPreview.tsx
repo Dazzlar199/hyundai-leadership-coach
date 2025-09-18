@@ -39,18 +39,22 @@ function ScriptRenderer({ script }: { script: string }) {
 
     const dialogueLines = dialogueScript
       .split("\n")
-      .filter((line) => line.trim().startsWith("**"));
-    const parsedDialogue = dialogueLines.map((line) => {
-      const match = line.match(/^\s*\*\*(.*?):\*\*\s*(.*)/);
-      const contentWithTags = (match?.[2] || "").trim();
+      .filter((line) => line.trim() !== ''); // Filter out empty lines only
+      
+    const parsedDialogue = dialogueLines.flatMap((line) => {
+      // More flexible regex to capture speaker and content
+      const match = line.match(/^\s*\*+\s*([^:]+?)\s*:\*+\s*(.*)/);
+      if (!match) return []; // If line doesn't match dialogue format, skip it
+
+      const contentWithTags = (match[2] || "").trim();
       const content = contentWithTags.replace(valueTagRegex, "").trim();
       const tags = [...contentWithTags.matchAll(valueTagRegex)].map(m => m[1]);
 
-      return {
-        speaker: (match?.[1] || "Unknown").trim(),
+      return [{
+        speaker: (match[1] || "Unknown").trim(),
         content,
         tags,
-      };
+      }];
     });
 
     return { dialogueParts: parsedDialogue, summary: summaryScript };

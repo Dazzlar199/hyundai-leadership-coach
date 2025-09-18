@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { Home } from "lucide-react";
 
 function Logo() {
   return (
@@ -20,13 +21,6 @@ function Logo() {
 }
 
 export function Navbar() {
-  const menuItems = [
-    { name: "진단", path: "/assess" },
-    { name: "시나리오", path: "/scenarios" },
-    // { name: "Coach", path: "/coach" },
-    // { name: "Voice", path: "/voice" },
-  ];
-
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
@@ -36,22 +30,13 @@ export function Navbar() {
         </div>
 
         {/* Right Section */}
-        <div className="flex items-center space-x-4">
-          <nav className="flex items-center space-x-4 text-sm font-medium">
-            {menuItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.path}
-                className="transition-colors hover:text-foreground/80 text-foreground/60 px-2 py-1"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="flex items-center space-x-2">
-            <ModeToggle />
-          </div>
+        <div className="flex items-center space-x-2">
+          <Link href="/">
+            <Button variant="ghost" size="icon">
+              <Home className="h-5 w-5" />
+            </Button>
+          </Link>
+          <ModeToggle />
         </div>
       </div>
     </header>

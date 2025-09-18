@@ -8,7 +8,7 @@ const assessSchema = z.object({
     key: z.enum(CORE_VALUES),
     score: z.number().min(0).max(5),
     evidence: z.array(z.string()),
-  })).length(10).describe("10대 핵심 가치별 점수 및 근거"),
+  })).min(5).describe("10대 핵심 가치별 점수 및 근거 (최소 5개 이상)"),
   coaching: z.array(z.object({
     title: z.string(),
     summary: z.string(),
