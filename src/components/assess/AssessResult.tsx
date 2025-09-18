@@ -56,8 +56,7 @@ export function AssessResult() {
             <Image
               src={leaderImageSrc}
               alt={`${tone}적인 팀장`}
-              width={96}
-              height={96}
+              fill
               className="rounded-full object-cover bg-muted"
             />
           </div>
